@@ -70,7 +70,7 @@ class ZabbixTemplates:
 
       if args.templates != 'All':
         request_args.filter = {
-          "host": [args.tempaltes]
+          "host": [args.templates]
         }
 
       for key in export:
