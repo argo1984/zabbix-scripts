@@ -173,6 +173,44 @@ optional arguments:
 ```
 
 
+## zabbix.configuration.export.py
+This is a simple tool to export all informations in zabbix for backup. You can use it to do a full backup including hosts, hostgroups, templates, ...
+
+Using this script you could potentialy automate backing up Zabbix templates. Here's a basic example of the process.
+
+```
+#!/bin/bash
+
+cd /var/lib/zabbix/backup
+./zabbix.template.export.py --url https://monitor.example.com/zabbix \
+  --user='zabbix-api-user' \
+  --password='super-secret' \
+  --out-dir zabbix-tempaltes
+
+cd zabbix-tempaltes
+git add .
+git commit -am 'automated template backup'
+```
+
+### Arguments
+
+```
+example-host user$ ./zabbix.template.export.py  --help
+usage: zabbix.template.export.py [-h] [--templates TEMPLATES]
+                                 [--out-dir OUT_DIR] [--debug] --url URL
+                                 --user USER --password PASSWORD
+
+optional arguments:
+  -h, --help                  Show this help message and exit
+  --templates TEMPLATES       Name of specific template to export
+  --out-dir OUT_DIR           Directory to output templates to.
+  --debug                     Enable debug mode, this will show you all the json-rpc calls and responses
+  --url URL                   URL to the zabbix server (example: https://monitor.example.com/zabbix )
+  --user USER                 The zabbix api user
+  --password PASSWORD         The zabbix api password
+```
+
+
 
 ## License
 
