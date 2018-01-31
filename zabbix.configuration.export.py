@@ -12,9 +12,28 @@ from sys import exit
 from datetime import datetime
 from pprint import pprint
 
+#export = {
+#        'templates': { 'method': 'template.get', 'id': 'templateid'},
+#        'hostgroups': { 'method': 'hostgroup.get', 'id': 'groupid' },
+#        'valueMaps': { 'method': 'valuemap.get', 'id': 'valuemapid' },
+#        'hosts': { 'method': 'host.get', 'id': 'hostid' },
+#        'screens': {'method': 'screen.get', 'id': 'screenids' },
+#        'maps': {'method': 'map.get', 'id': 'sysmapids' },
+#        'images': {'method': 'image.get', 'id': 'imageids'},
+#        }
+#
+#
+#pprint(export)
+#
+#for key in export:
+#    print "Key: " + key
+#    print export[key]['id']
+#
+#sys.exit(0)
+
 parser = argparse.ArgumentParser(description='This is a simple tool to export zabbix templates for backup. Please note it will always set the data on export to 1/1/2016 so git wont update unless something substantial happens.')
 parser.add_argument('--templates', help='Name of specific template to export',default='All')
-parser.add_argument('--out-dir', help='Directory to output templates to.',default='./configuration')
+parser.add_argument('--out-dir', help='Directory to output templates to.',default='../configuration')
 parser.add_argument('--debug', help='Enable debug mode, this will show you all the json-rpc calls and responses', action="store_true")
 parser.add_argument('--url', help='URL to the zabbix server (example: https://monitor.example.com/zabbix)',required = True)
 parser.add_argument('--user', help='The zabbix api user',required = True)
@@ -56,7 +75,7 @@ class ZabbixTemplates:
     def exportTemplates(self,args):
       export = {
         'templates': { 'method': 'template.get', 'id': 'templateid', 'name': 'host'},
-        'hostgroups': { 'method': 'hostgroup.get', 'id': 'groupid', 'name': 'name' },
+        'groups': { 'method': 'hostgroup.get', 'id': 'groupid', 'name': 'name' },
         'valueMaps': { 'method': 'valuemap.get', 'id': 'valuemapid' },
         'hosts': { 'method': 'host.get', 'id': 'hostid' },
         'screens': {'method': 'screen.get', 'id': 'screenid' },
@@ -86,14 +105,14 @@ class ZabbixTemplates:
             if False == os.path.isdir(args.out_dir+'/'+key):
               os.mkdir(args.out_dir+'/'+key)
             dest = args.out_dir+'/'+key+'/'+t['name']+'.xml'
-            self.exportTemplate(t[export[key]['id']],dest)
+            self.exportTemplate(t[export[key]['id']],dest,key)
 
-    def exportTemplate(self,tid,oput):
+    def exportTemplate(self,tid,oput,export):
 
       print "tempalteid:",tid," output:",oput
       args = {
         "options": {
-            "templates": [tid]
+            export: [tid]
         },
         "format": "xml"
       }
@@ -130,9 +149,9 @@ class ZabbixHostgroups:
 
       if result['result']:
         for t in result['result']:
-          pprint(t)
+          #pprint(t)
           dest = args.out_dir+'/'+t['name']+'.xml'
-          print dest
+          #print dest
           if False == os.path.isdir(args.out_dir+'/'+t['name']):
             os.mkdir(args.out_dir+'/'+t['name'])
           self.exportTemplate(t['groupid'],dest)
